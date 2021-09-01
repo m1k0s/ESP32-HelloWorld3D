@@ -15,52 +15,53 @@ uint32_t g_MaxCharWidth;
 
 void setup()
 {
-  if(BLINK_DELAY_MILLIS > 0)
-  {
-    pinMode(LED_BUILTIN, OUTPUT);
-  }
+    if(BLINK_DELAY_MILLIS > 0)
+    {
+        pinMode(LED_BUILTIN, OUTPUT);
+    }
 
-  g_OLED.begin();
-  g_OLED.clear();
+    g_OLED.begin();
+    g_OLED.clear();
 
-  g_ScreenWidth = g_OLED.getWidth();
-  g_ScreenHeight = g_OLED.getHeight();
+    g_ScreenWidth = g_OLED.getWidth();
+    g_ScreenHeight = g_OLED.getHeight();
 
-  g_OLED.setFont(u8g2_font_profont10_tf);
-  g_LineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent();
-  g_MaxCharWidth = g_OLED.getMaxCharWidth();
+    g_OLED.setFont(u8g2_font_profont10_tf);
+    g_LineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent();
+    g_MaxCharWidth = g_OLED.getMaxCharWidth();
+
 }
 
 void loop()
 {
-  static uint32_t lastMillis = 0;
-  uint32_t thisMillis = millis();
-  uint32_t deltaMillis = thisMillis - lastMillis;
-  lastMillis = thisMillis;
+    static uint32_t lastMillis = 0;
+    uint32_t thisMillis = millis();
+    uint32_t deltaMillis = thisMillis - lastMillis;
+    lastMillis = thisMillis;
 
-  static float fps = 0.0f;
-  if(deltaMillis > 0)
-  {
-    fps = fps * 0.9f + (1000.0f / deltaMillis) * 0.1f;
-  }
+    static float fps = 0.0f;
+    if(deltaMillis > 0)
+    {
+        fps = fps * 0.9f + (1000.0f / deltaMillis) * 0.1f;
+    }
 
-  if(BLINK_DELAY_MILLIS > 0)
-  {
-    void blinkLED(uint32_t deltaMillis);
-    blinkLED(deltaMillis);
-  }
+    if(BLINK_DELAY_MILLIS > 0)
+    {
+        void blinkLED(uint32_t deltaMillis);
+        blinkLED(deltaMillis);
+    }
 
-  g_OLED.clearBuffer();
+    g_OLED.clearBuffer();
 
-  {
-    void render(uint32_t deltaMillis);
-    render(deltaMillis);
-  }
+    {
+        void render(uint32_t deltaMillis);
+        render(deltaMillis);
+    }
 
-  g_OLED.setCursor(g_ScreenWidth - 3 * g_MaxCharWidth, g_LineHeight);
-  g_OLED.printf("%03.0f", fps);
+    g_OLED.setCursor(g_ScreenWidth - 3 * g_MaxCharWidth, g_LineHeight);
+    g_OLED.printf("%03.0f", fps);
 
-  g_OLED.sendBuffer();
+    g_OLED.sendBuffer();
 }
 
 void blinkLED(uint32_t deltaMillis)
@@ -72,8 +73,8 @@ void blinkLED(uint32_t deltaMillis)
     ledMillis += deltaMillis;
     if(ledMillis >= BLINK_DELAY_MILLIS)
     {
-      ledState = !ledState;
-      ledMillis -= BLINK_DELAY_MILLIS;
+        ledState = !ledState;
+        ledMillis -= BLINK_DELAY_MILLIS;
     }
 }
 
