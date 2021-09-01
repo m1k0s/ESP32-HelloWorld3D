@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include <alloca.h>
 #include "viewport.h"
+#include "tetrahedron.h"
+#include "hexahedron.h"
+#include "octahedron.h"
 
 #define OLED_CLOCK 15
 #define OLED_DATA 4
@@ -87,4 +91,37 @@ void blinkLED(uint32_t deltaMillis)
 
 void render(uint32_t deltaMillis)
 {
+    static float angleX = 0.0f;
+    static float angleY = 0.0f;
+    static float angleZ = 0.0f;
+
+    void renderWireframe(const Mesh& mesh, const Viewport& viewport, float angleX, float angleY, float angleZ);
+    renderWireframe(g_Hexahedron, g_Viewport, angleX, angleY, angleZ);
+
+    float dt = deltaMillis / 1000.0f;
+
+    angleX += dt * 1.0f / M_PI;
+    angleY += dt * 2.0f / M_PI;
+    angleZ += dt * 3.0f / M_PI;
+}
+
+void renderWireframe(const Mesh& mesh, const Viewport& viewport, float angleX, float angleY, float angleZ)
+{
+    Vector3* verts = (Vector3*)alloca(sizeof(Vector3) * mesh.verticiesSize);
+
+    for(int i = 0; i < mesh.verticiesSize; ++i)
+    {
+        verts[i] = mesh.verticies[i].
+            RotateX(angleX).
+            RotateY(angleY).
+            RotateZ(angleZ).
+            Project(viewport);
+    }
+
+    for(int i = 0; i < mesh.edgesSize; i += 2)
+    {
+        const Vector3& p0 = verts[mesh.edges[i]];
+        const Vector3& p1 = verts[mesh.edges[i + 1]];
+        g_OLED.drawLine(p0.x, p0.y, p1.x, p1.y);
+    }
 }
