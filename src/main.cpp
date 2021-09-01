@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
+#include "viewport.h"
 
 #define OLED_CLOCK 15
 #define OLED_DATA 4
@@ -12,6 +13,8 @@ uint32_t g_ScreenWidth;
 uint32_t g_ScreenHeight;
 uint32_t g_LineHeight;
 uint32_t g_MaxCharWidth;
+
+Viewport g_Viewport;
 
 void setup()
 {
@@ -30,6 +33,10 @@ void setup()
     g_LineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_MaxCharWidth = g_OLED.getMaxCharWidth();
 
+    g_Viewport.halfWidth = 0.5f * g_ScreenWidth;
+    g_Viewport.halfHeight = 0.5f * g_ScreenHeight;
+    g_Viewport.fov = g_ScreenWidth < g_ScreenHeight ? g_ScreenWidth : g_ScreenHeight;
+    g_Viewport.eyeDistance = 4.0f;
 }
 
 void loop()
