@@ -79,6 +79,14 @@ void loop()
 
     g_OLED.sendBuffer();
 #endif
+
+    const uint32_t FRAME_TIME_CAP_MILLIS = 33;
+    // Work out how long everything up till now took in this frame and delay appropriately
+    uint32_t frameMillis = millis() - thisMillis;
+    if (frameMillis < FRAME_TIME_CAP_MILLIS)
+    {
+        delay(FRAME_TIME_CAP_MILLIS - frameMillis);
+    }
 }
 
 void blinkLED(uint32_t deltaMillis)
