@@ -1,24 +1,24 @@
 #include <Arduino.h>
-#include <U8g2lib.h>
 #include <alloca.h>
 #include "viewport.h"
 #include "tetrahedron.h"
 #include "hexahedron.h"
 #include "octahedron.h"
 
-#define OLED_CLOCK 15
-#define OLED_DATA 4
-#define OLED_RESET 16
-
-const uint32_t BLINK_DELAY_MILLIS = 500;
-
+#if HELTEC
+#include <U8g2lib.h>
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_OLED(U8G2_R0, OLED_RESET, OLED_CLOCK, OLED_DATA);
+#else
+#error Unknown board!
+#endif
 uint32_t g_ScreenWidth;
 uint32_t g_ScreenHeight;
 uint32_t g_LineHeight;
 uint32_t g_MaxCharWidth;
 
 Viewport g_Viewport;
+
+const uint32_t BLINK_DELAY_MILLIS = 500;
 
 void setup()
 {
@@ -27,6 +27,7 @@ void setup()
         pinMode(LED_BUILTIN, OUTPUT);
     }
 
+#if HELTEC
     g_OLED.begin();
     g_OLED.clear();
 
@@ -36,6 +37,7 @@ void setup()
     g_OLED.setFont(u8g2_font_profont10_tf);
     g_LineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent();
     g_MaxCharWidth = g_OLED.getMaxCharWidth();
+#endif
 
     g_Viewport.halfWidth = 0.5f * g_ScreenWidth;
     g_Viewport.halfHeight = 0.5f * g_ScreenHeight;
@@ -62,17 +64,21 @@ void loop()
         blinkLED(deltaMillis);
     }
 
+#if HELTEC
     g_OLED.clearBuffer();
+#endif
 
     {
         void render(uint32_t deltaMillis);
         render(deltaMillis);
     }
 
+#if HELTEC
     g_OLED.setCursor(g_ScreenWidth - 3 * g_MaxCharWidth, g_LineHeight);
     g_OLED.printf("%03.0f", fps);
 
     g_OLED.sendBuffer();
+#endif
 }
 
 void blinkLED(uint32_t deltaMillis)
@@ -122,6 +128,8 @@ void renderWireframe(const Mesh& mesh, const Viewport& viewport, float angleX, f
     {
         const Vector3& p0 = verts[mesh.edges[i]];
         const Vector3& p1 = verts[mesh.edges[i + 1]];
+#if HELTEC
         g_OLED.drawLine(p0.x, p0.y, p1.x, p1.y);
+#endif
     }
 }
