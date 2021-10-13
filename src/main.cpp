@@ -1,20 +1,17 @@
 #include <Arduino.h>
 #include <alloca.h>
+#include "display.h"
 #include "viewport.h"
 #include "tetrahedron.h"
 #include "hexahedron.h"
 #include "octahedron.h"
 
 #if HELTEC
-#include <U8g2lib.h>
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C g_OLED(U8G2_R0, OLED_RESET, OLED_CLOCK, OLED_DATA);
+Display_U8G2_SSD1306 g_Display = Display_U8G2_SSD1306();
 #elif TTGO
-#include <TFT_eSPI.h>
-TFT_eSPI g_TFT = TFT_eSPI();
-TFT_eSprite g_Buffer(&g_TFT);
-#else
-#error Unknown board!
-#endif
+Display_TFT_eSPI g_Display = Display_TFT_eSPI();
+#endif 
+
 uint32_t g_ScreenWidth;
 uint32_t g_ScreenHeight;
 uint32_t g_LineHeight;
@@ -31,31 +28,12 @@ void setup()
         pinMode(LED_BUILTIN, OUTPUT);
     }
 
-#if HELTEC
-    g_OLED.begin();
-    g_OLED.clear();
+    g_Display.Init();
+    g_ScreenWidth = g_Display.Width();
+    g_ScreenHeight = g_Display.Height();
 
-    g_ScreenWidth = g_OLED.getWidth();
-    g_ScreenHeight = g_OLED.getHeight();
-
-    g_OLED.setFont(u8g2_font_profont10_tf);
-    g_LineHeight = g_OLED.getFontAscent() - g_OLED.getFontDescent();
-    g_MaxCharWidth = g_OLED.getMaxCharWidth();
-#elif TTGO
-    g_TFT.begin();
-    g_TFT.setRotation(3);
-
-    g_ScreenWidth = g_TFT.width();
-    g_ScreenHeight = g_TFT.height();
-
-    g_Buffer.setColorDepth(16);
-    g_Buffer.createSprite(g_ScreenWidth, g_ScreenHeight);
-
-    g_Buffer.setTextColor(TFT_WHITE, TFT_BLACK);
-    g_Buffer.setTextFont(2);
-    g_LineHeight = g_Buffer.fontHeight();
-    g_MaxCharWidth = g_Buffer.textWidth("0");
-#endif
+    g_LineHeight = g_Display.FontHeight();
+    g_MaxCharWidth = g_Display.FontMaxCharWidth();
 
     g_Viewport.halfWidth = 0.5f * g_ScreenWidth;
     g_Viewport.halfHeight = 0.5f * g_ScreenHeight;
@@ -82,28 +60,16 @@ void loop()
         blinkLED(deltaMillis);
     }
 
-#if HELTEC
-    g_OLED.clearBuffer();
-#elif TTGO
-    g_Buffer.fillSprite(TFT_BLACK);
-#endif
+    g_Display.Clear();
 
     {
         void render(uint32_t deltaMillis);
         render(deltaMillis);
     }
 
-#if HELTEC
-    g_OLED.setCursor(g_ScreenWidth - 3 * g_MaxCharWidth, g_LineHeight);
-    g_OLED.printf("%03.0f", fps);
+    g_Display.PrintF(g_ScreenWidth - 3 * g_MaxCharWidth, 0, "%03.0f", fps);
 
-    g_OLED.sendBuffer();
-#elif TTGO
-    g_Buffer.setCursor(g_ScreenWidth - 3 * g_MaxCharWidth, 0);
-    g_Buffer.printf("%03.0f", fps);
-
-    g_Buffer.pushSprite(0, 0);
-#endif
+    g_Display.SendBuffer();
 
     const uint32_t FRAME_TIME_CAP_MILLIS = 33;
     // Work out how long everything up till now took in this frame and delay appropriately
@@ -161,10 +127,6 @@ void renderWireframe(const Mesh& mesh, const Viewport& viewport, float angleX, f
     {
         const Vector3& p0 = verts[mesh.edges[i]];
         const Vector3& p1 = verts[mesh.edges[i + 1]];
-#if HELTEC
-        g_OLED.drawLine(p0.x, p0.y, p1.x, p1.y);
-#elif TTGO
-        g_Buffer.drawLine(p0.x, p0.y, p1.x, p1.y, TFT_YELLOW);
-#endif
+        g_Display.DrawLine(p0.x, p0.y, p1.x, p1.y);
     }
 }
