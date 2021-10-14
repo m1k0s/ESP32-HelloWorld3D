@@ -1,8 +1,10 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdarg.h>
+#include <stdio.h>
 
-class IDisplay
+class Display
 {
 public:
     virtual void Init() = 0;
@@ -12,15 +14,25 @@ public:
     virtual void SendBuffer() = 0;
     virtual int16_t FontMaxCharWidth() = 0;
     virtual int16_t FontHeight() = 0;
-    virtual void PrintF(int16_t x, int16_t y, const char *format, ...) = 0;
+    virtual void DrawString(int16_t x, int16_t y, const char *s, size_t len) = 0;
     virtual void DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1) = 0;
+
+    void PrintF(int16_t x, int16_t y, const char *format, ...)
+    {
+        char buffer[256];
+        va_list args;
+        va_start(args, format);
+        int len = vsnprintf(buffer, sizeof(buffer), format, args);
+        va_end(args);
+        DrawString(x, y, buffer, len);
+    }
 };
 
 #if HELTEC
 
 #include <U8g2lib.h>
 
-class Display_U8G2_SSD1306 : public IDisplay
+class Display_U8G2_SSD1306 : public Display
 {
 private:
     U8G2_SSD1306_128X64_NONAME_F_HW_I2C m_OLED;
@@ -68,15 +80,10 @@ public:
         return m_OLED.getFontAscent() - m_OLED.getFontDescent();
     }
 
-    virtual void PrintF(int16_t x, int16_t y, const char *format, ...)
+    virtual void DrawString(int16_t x, int16_t y, const char *s, size_t len)
     {
-        char buffer[256];
-        va_list args;
-        va_start(args, format);
-        int len = vsnprintf(buffer, sizeof(buffer), format, args);
-        va_end(args);
         m_OLED.setCursor(x, y);
-        m_OLED.write((uint8_t*)buffer, len);
+        m_OLED.write((uint8_t*)s, len);
     }
 
     virtual void DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
@@ -89,7 +96,7 @@ public:
 
 #include <TFT_eSPI.h>
 
-class Display_TFT_eSPI : public IDisplay
+class Display_TFT_eSPI : public Display
 {
 private:
     TFT_eSPI m_TFT;
@@ -140,14 +147,9 @@ public:
         return m_Buffer.fontHeight();
     }
 
-    virtual void PrintF(int16_t x, int16_t y, const char *format, ...)
+    virtual void DrawString(int16_t x, int16_t y, const char *s, size_t len)
     {
-        char buffer[256];
-        va_list args;
-        va_start(args, format);
-        vsnprintf(buffer, sizeof(buffer), format, args);
-        va_end(args);
-        m_Buffer.drawString(buffer, x, y);
+        m_Buffer.drawString(s, x, y);
     }
 
     virtual void DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
