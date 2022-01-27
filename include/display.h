@@ -158,6 +158,56 @@ public:
     }
 };
 
+#elif WROVERKIT
+
+class Display_Adafruit_ILI9341 : public Display
+{
+public:
+    Display_Adafruit_ILI9341()
+    {
+    }
+
+    virtual void Init()
+    {
+    }
+
+    virtual int16_t Width()
+    {
+        return 0;
+    }
+
+    virtual int16_t Height()
+    {
+        return 0;
+    }
+
+    virtual void Clear()
+    {
+    }
+
+    virtual void SendBuffer()
+    {
+    }
+
+    virtual int16_t FontMaxCharWidth()
+    {
+        return 0;
+    }
+
+    virtual int16_t FontHeight()
+    {
+        return 0;
+    }
+
+    virtual void DrawString(int16_t x, int16_t y, const char *s, size_t len)
+    {
+    }
+
+    virtual void DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
+    {
+    }
+};
+
 #else
 
 #error Unknown board!
