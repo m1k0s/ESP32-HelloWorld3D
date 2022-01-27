@@ -11,7 +11,7 @@ Display_U8G2_SSD1306 g_Display = Display_U8G2_SSD1306();
 #elif TTGO
 Display_TFT_eSPI g_Display = Display_TFT_eSPI();
 #elif WROVERKIT
-Display_Adafruit_ILI9341 g_Display = Display_Adafruit_ILI9341();
+Display_WROVER_KIT_LCD g_Display = Display_WROVER_KIT_LCD();
 #endif 
 
 uint32_t g_ScreenWidth;

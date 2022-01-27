@@ -160,29 +160,39 @@ public:
 
 #elif WROVERKIT
 
-class Display_Adafruit_ILI9341 : public Display
+#include <WROVER_KIT_LCD.h>
+
+class Display_WROVER_KIT_LCD : public Display
 {
+private:
+    WROVER_KIT_LCD m_TFT;
+
 public:
-    Display_Adafruit_ILI9341()
+    Display_WROVER_KIT_LCD() : m_TFT()
     {
     }
 
     virtual void Init()
     {
+        m_TFT.begin();
+        m_TFT.setRotation(3);
+        m_TFT.setTextColor(WROVER_WHITE);
+        m_TFT.setTextSize(1);
     }
 
     virtual int16_t Width()
     {
-        return 0;
+        return m_TFT.width();
     }
 
     virtual int16_t Height()
     {
-        return 0;
+        return m_TFT.height();
     }
 
     virtual void Clear()
     {
+        m_TFT.fillScreen(WROVER_BLACK);
     }
 
     virtual void SendBuffer()
@@ -191,20 +201,33 @@ public:
 
     virtual int16_t FontMaxCharWidth()
     {
-        return 0;
+        int16_t x1;
+        int16_t y1;
+        uint16_t w;
+        uint16_t h;
+        m_TFT.getTextBounds("M", 0, 0, &x1, &y1, &w, &h);
+        return w;
     }
 
     virtual int16_t FontHeight()
     {
-        return 0;
+        int16_t x1;
+        int16_t y1;
+        uint16_t w;
+        uint16_t h;
+        m_TFT.getTextBounds("M", 0, 0, &x1, &y1, &w, &h);
+        return h;
     }
 
     virtual void DrawString(int16_t x, int16_t y, const char *s, size_t len)
     {
+        m_TFT.setCursor(x, y);
+        m_TFT.write(s, len);
     }
 
     virtual void DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
     {
+        m_TFT.drawLine(x0, y0, x1, y1, WROVER_WHITE);
     }
 };
 
