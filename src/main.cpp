@@ -6,13 +6,7 @@
 #include "hexahedron.h"
 #include "octahedron.h"
 
-#if HELTEC
-Display_U8G2_SSD1306 g_Display = Display_U8G2_SSD1306();
-#elif TTGO
-Display_TFT_eSPI g_Display = Display_TFT_eSPI();
-#elif WROVERKIT
-Display_WROVER_KIT_LCD g_Display = Display_WROVER_KIT_LCD();
-#endif 
+Display g_Display = Display();
 
 uint32_t g_ScreenWidth;
 uint32_t g_ScreenHeight;
