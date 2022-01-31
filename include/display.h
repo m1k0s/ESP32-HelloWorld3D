@@ -27,13 +27,13 @@ private:
 #endif
 
 public:
-    Display() :
+    Display()
 #if HELTEC
-        m_OLED(U8G2_R0, OLED_RESET, OLED_CLOCK, OLED_DATA)
+        : m_OLED(U8G2_R0, OLED_RESET, OLED_CLOCK, OLED_DATA)
 #elif TTGO
-        m_TFT(), m_Buffer(&m_TFT)
+        : m_TFT(), m_Buffer(&m_TFT)
 #elif WROVERKIT
-        m_TFT()
+        : m_TFT()
 #endif
     {
     }
