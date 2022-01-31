@@ -27,7 +27,7 @@ void setup()
 {
     if(BLINK_DELAY_MILLIS > 0)
     {
-        #if LED_BUILTIN
+        #ifdef LED_BUILTIN
         pinMode(LED_BUILTIN, OUTPUT);
         #else
         pinMode(LED_BUILTIN_RED, OUTPUT);
@@ -93,7 +93,7 @@ void blinkLED(uint32_t deltaMillis)
     static bool ledState = HIGH;
     static uint32_t ledMillis = 0;
 
-    #if LED_BUILTIN
+    #ifdef LED_BUILTIN
     digitalWrite(LED_BUILTIN, ledState);
     #else
     digitalWrite(LED_BUILTIN_RED, ledState);
